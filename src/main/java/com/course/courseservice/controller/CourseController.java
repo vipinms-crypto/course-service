@@ -25,42 +25,48 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RestController
 @RequestMapping("/courses")
-@Tag(name = "User API", description = "API for managing users")
+@Tag(name = "Course API", description = "API for managing courses")
 public class CourseController {
 
 	@Autowired
 	private CourseService courseService;
 
 	@GetMapping
-	@Operation(summary = "Fetch all users", description = "Retrieve a list of all users")
-
+	@Operation(summary = "Fetch all courses", description = "Retrieve a list of all courses")
 	public List<CourseResponseDto> getAllCourses() throws Exception {
-//		log.info("An INFO message");
-		System.out.println("Entered");
+		log.info("Entered into getAllCourses");
 		return courseService.getAllCourses();
 	}
 
 	@GetMapping("/{id}")
+	@Operation(summary = "Fetch a course", description = "Retrieve a course by passing its ID")
 	public ResponseEntity<CourseResponseDto> getCourseById(@PathVariable Integer id) throws Exception {
+		log.info("Entered into getCourseById");
 		Optional<CourseResponseDto> course = courseService.getCourseById(id);
 		return course.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
 	}
 
 	@PostMapping
+	@Operation(summary = "Persist course", description = "Persist course data")
 	public ResponseEntity<CourseResponseDto> createCourse(@RequestBody CourseRequestDto courseReqDto) throws Exception {
+		log.info("Entered into createCourse");
 		CourseResponseDto resDto = courseService.createCourse(courseReqDto);
 		return ResponseEntity.ok(resDto);
 	}
 
 	@PutMapping("/{id}")
+	@Operation(summary = "Update course", description = "Update a course by passing its ID")
 	public ResponseEntity<CourseResponseDto> updateCourse(@PathVariable Integer id,
 			@RequestBody CourseRequestDto courseReqDto) throws Exception {
+		log.info("Entered into updateCourse");
 		CourseResponseDto resDto = courseService.updateCourse(id, courseReqDto);
 		return ResponseEntity.ok(resDto);
 	}
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete course", description = "Delete a course by passing its ID")
     public ResponseEntity<Boolean> deleteCourse(@PathVariable Integer id) throws Exception {
+    	log.info("Entered into deleteCourse");
 		return ResponseEntity.ok(courseService.deleteCourse(id));
     }
 }
