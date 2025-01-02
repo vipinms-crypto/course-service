@@ -32,6 +32,7 @@ public class Chapter {
     @Column(length = 50)
     private String chapterDescription;
 
+    @Column(name = "chapter_module_id", insertable = false, updatable = false)
     private Integer chapterModuleId;
 
     private Integer chapterDuration;
@@ -51,6 +52,6 @@ public class Chapter {
     
     @ManyToOne
     @JoinColumn(name = "module_id")
-    private Module module;
+    private Component component;
 
 }

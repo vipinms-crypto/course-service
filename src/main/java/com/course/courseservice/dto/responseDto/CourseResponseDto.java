@@ -13,6 +13,6 @@ public class CourseResponseDto {
 	private Integer courseNoModules;
 	private Integer courseDuration;
 	private Integer courseUserId;
-	private List<ModuleResponseDto> moduleRequestDtos;
+	private List<ComponentResponseDto> componentResponseDto;
 	
 }

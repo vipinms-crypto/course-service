@@ -42,6 +42,6 @@ public class Course {
 	private LocalDateTime courseUpdatedDatetime;
 
 	@OneToMany(mappedBy = "course", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<Module> modules;
+	private List<Component> components;
 
 }

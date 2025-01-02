@@ -12,6 +12,6 @@ public class CourseRequestDto {
 	private Integer courseNoModules;
 	private Integer courseDuration;
 	private Integer courseUserId;
-	private List<ModuleRequestDto> moduleRequestDtos;
+	private List<ComponentRequestDto> componentRequestDto;
 	
 }
