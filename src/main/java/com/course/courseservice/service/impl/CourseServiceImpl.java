@@ -57,7 +57,7 @@ public class CourseServiceImpl implements CourseService {
         Optional<Course> courseOptional = courseRepository.findById(id);
         if (courseOptional.isPresent()) {
             Course course = courseOptional.get();
-            course = courseMapper.toEntity(courseRequestDto);
+            courseMapper.updateCourseFromDto(courseRequestDto, course);
             Course updatedCourse = courseRepository.save(course);
             log.info("Exit from service method updateCourse with response ,"+ updatedCourse);
             return  courseMapper.toDto(updatedCourse);
