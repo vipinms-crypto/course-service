@@ -9,12 +9,15 @@ import org.springframework.stereotype.Service;
 
 import com.course.courseservice.dto.requestDto.CourseRequestDto;
 import com.course.courseservice.dto.responseDto.CourseResponseDto;
+import com.course.courseservice.entity.Chapter;
+import com.course.courseservice.entity.Component;
 import com.course.courseservice.entity.Course;
 import com.course.courseservice.exception.ResourceNotFoundException;
 import com.course.courseservice.mapper.CourseMapper;
 import com.course.courseservice.repository.CourseRepository;
 import com.course.courseservice.service.CourseService;
 
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -28,9 +31,16 @@ public class CourseServiceImpl implements CourseService {
 	private CourseMapper courseMapper;
 
     @Override
+    @Transactional
     public CourseResponseDto createCourse(CourseRequestDto courseRequestDto) throws Exception {
     	log.info("Entered into service method createCourse");
-        Course course = courseMapper.toEntity(courseRequestDto);
+        Course course = courseMapper.toCourseEntity(courseRequestDto);
+        for (Component component : course.getComponents()) {
+            component.setCourse(course);
+            for (Chapter chapter : component.getChapters()) {
+                chapter.setComponent(component);
+            }
+        }
         Course savedCourse = courseRepository.save(course);
         log.info("Exit from service method createCourse");
         return mapToResponseDto(savedCourse);
@@ -52,6 +62,7 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
+    @Transactional
     public CourseResponseDto updateCourse(Integer id, CourseRequestDto courseRequestDto) throws Exception{
     	log.info("Entered into service method updateCourse");
         Optional<Course> courseOptional = courseRepository.findById(id);
@@ -60,7 +71,7 @@ public class CourseServiceImpl implements CourseService {
             courseMapper.updateCourseFromDto(courseRequestDto, course);
             Course updatedCourse = courseRepository.save(course);
             log.info("Exit from service method updateCourse with response ,"+ updatedCourse);
-            return  courseMapper.toDto(updatedCourse);
+            return  courseMapper.toCourseResponseDto(updatedCourse);
         } else {
         	log.info("No Course data found for given id,"+id);
         	throw new ResourceNotFoundException("No data found");
@@ -82,6 +93,6 @@ public class CourseServiceImpl implements CourseService {
 
     private CourseResponseDto mapToResponseDto(Course course) {
     	log.info("Entered into service method mapToResponseDto");
-    	return courseMapper.toDto(course);
+    	return courseMapper.toCourseResponseDto(course);
     }
 }
