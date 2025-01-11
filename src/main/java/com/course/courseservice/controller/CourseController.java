@@ -69,4 +69,11 @@ public class CourseController {
     	log.info("Entered into deleteCourse");
 		return ResponseEntity.ok(courseService.deleteCourse(id));
     }
+    
+    @PostMapping("/search")
+	@Operation(summary = "Fetch all courses", description = "Retrieve a list of all courses based on given input")
+	public ResponseEntity<List<CourseResponseDto>> getAllCoursesBySearch(@RequestBody CourseRequestDto courseReqDto) throws Exception {
+		log.info("Entered into getAllCourses");
+		return ResponseEntity.ok(courseService.getAllCoursesBySearch(courseReqDto));
+	}
 }

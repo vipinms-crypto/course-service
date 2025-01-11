@@ -22,4 +22,6 @@ public interface CourseService {
 
     // Delete a course
     boolean deleteCourse(Integer id) throws Exception;
+
+	List<CourseResponseDto> getAllCoursesBySearch(CourseRequestDto courseReqDto);
 }

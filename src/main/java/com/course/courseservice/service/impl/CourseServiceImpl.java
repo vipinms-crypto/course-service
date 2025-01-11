@@ -95,4 +95,13 @@ public class CourseServiceImpl implements CourseService {
     	log.info("Entered into service method mapToResponseDto");
     	return courseMapper.toCourseResponseDto(course);
     }
+
+	@Override
+	public List<CourseResponseDto> getAllCoursesBySearch(CourseRequestDto courseReqDto) {
+		
+		return courseRepository.findByCourseUserId(courseReqDto.getCourseUserId()).stream()
+                .map(this::mapToResponseDto).toList();
+	}
+    
+    
 }
