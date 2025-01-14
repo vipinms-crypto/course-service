@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.course.courseservice.dto.requestDto.CourseRequestDto;
 import com.course.courseservice.dto.responseDto.CourseResponseDto;
+import com.course.courseservice.model.SearchCriteria;
 import com.course.courseservice.service.CourseService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -72,8 +73,8 @@ public class CourseController {
     
     @PostMapping("/search")
 	@Operation(summary = "Fetch all courses", description = "Retrieve a list of all courses based on given input")
-	public ResponseEntity<List<CourseResponseDto>> getAllCoursesBySearch(@RequestBody CourseRequestDto courseReqDto) throws Exception {
+	public ResponseEntity<List<CourseResponseDto>> getAllCoursesBySearch(@RequestBody SearchCriteria searchCriteria) throws Exception {
 		log.info("Entered into getAllCourses");
-		return ResponseEntity.ok(courseService.getAllCoursesBySearch(courseReqDto));
+		return ResponseEntity.ok(courseService.getAllCoursesBySearch(searchCriteria));
 	}
 }

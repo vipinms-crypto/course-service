@@ -12,10 +12,13 @@ import com.course.courseservice.dto.responseDto.CourseResponseDto;
 import com.course.courseservice.entity.Chapter;
 import com.course.courseservice.entity.Component;
 import com.course.courseservice.entity.Course;
+import com.course.courseservice.entity.UserCourseMapping;
 import com.course.courseservice.exception.ResourceNotFoundException;
 import com.course.courseservice.mapper.CourseMapper;
+import com.course.courseservice.model.SearchCriteria;
 import com.course.courseservice.repository.CourseRepository;
 import com.course.courseservice.service.CourseService;
+import com.course.courseservice.service.UserCourseMappingService;
 
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +32,9 @@ public class CourseServiceImpl implements CourseService {
 	
 	@Autowired
 	private CourseMapper courseMapper;
+	
+	@Autowired
+	UserCourseMappingService userCourseMappingService;
 
     @Override
     @Transactional
@@ -97,10 +103,14 @@ public class CourseServiceImpl implements CourseService {
     }
 
 	@Override
-	public List<CourseResponseDto> getAllCoursesBySearch(CourseRequestDto courseReqDto) {
-		
-		return courseRepository.findByCourseUserId(courseReqDto.getCourseUserId()).stream()
-                .map(this::mapToResponseDto).toList();
+	public List<CourseResponseDto> getAllCoursesBySearch(SearchCriteria searchCriteria) {
+		log.info("Entered into service method getAllCoursesBySearch");
+		List<UserCourseMapping> userCourseMapping = userCourseMappingService.searchUserMapping(searchCriteria);
+		if(!userCourseMapping.isEmpty()) {
+			return courseRepository.findByCourseUserId(Integer.valueOf(searchCriteria.getSearchObject().getInputValue())).stream()
+	                .map(this::mapToResponseDto).toList();
+		}
+		return null;
 	}
     
     

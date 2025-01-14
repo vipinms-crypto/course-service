@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.course.courseservice.dto.requestDto.CourseRequestDto;
 import com.course.courseservice.dto.responseDto.CourseResponseDto;
+import com.course.courseservice.model.SearchCriteria;
 
 public interface CourseService {
 
@@ -23,5 +24,5 @@ public interface CourseService {
     // Delete a course
     boolean deleteCourse(Integer id) throws Exception;
 
-	List<CourseResponseDto> getAllCoursesBySearch(CourseRequestDto courseReqDto);
+	List<CourseResponseDto> getAllCoursesBySearch(SearchCriteria searchCriteria);
 }
