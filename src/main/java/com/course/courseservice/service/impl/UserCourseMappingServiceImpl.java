@@ -4,9 +4,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.course.courseservice.entity.UserCourseMapping;
+import com.course.courseservice.exception.DuplicateKeyException;
 import com.course.courseservice.exception.ResourceNotFoundException;
 import com.course.courseservice.model.SearchCriteria;
 import com.course.courseservice.repository.UserCourseMappingRepository;
@@ -36,7 +38,14 @@ public class UserCourseMappingServiceImpl implements UserCourseMappingService{
 	@Override
 	public UserCourseMapping createCourseUserMapping(UserCourseMapping userCourseMapping) {
 		log.info("Entered into service method createCourseUserMapping");
-		return userCourseMappingRepository.save(userCourseMapping);
+		try {
+			return userCourseMappingRepository.save(userCourseMapping);
+		} catch (DataIntegrityViolationException ex) {
+			if (ex.getMessage().contains("Duplicate entry")) {
+            	throw new DuplicateKeyException("User aleady enrolled in this course..!");
+            }
+		}
+		return null;
 	}
 
 	@Override

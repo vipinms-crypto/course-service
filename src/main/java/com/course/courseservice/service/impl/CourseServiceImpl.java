@@ -26,92 +26,90 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class CourseServiceImpl implements CourseService {
-	
+
 	@Autowired
-    private CourseRepository courseRepository;
-	
+	private CourseRepository courseRepository;
+
 	@Autowired
 	private CourseMapper courseMapper;
-	
+
 	@Autowired
 	UserCourseMappingService userCourseMappingService;
 
-    @Override
-    @Transactional
-    public CourseResponseDto createCourse(CourseRequestDto courseRequestDto) throws Exception {
-    	log.info("Entered into service method createCourse");
-        Course course = courseMapper.toCourseEntity(courseRequestDto);
-        for (Component component : course.getComponents()) {
-            component.setCourse(course);
-            for (Chapter chapter : component.getChapters()) {
-                chapter.setComponent(component);
-            }
-        }
-        Course savedCourse = courseRepository.save(course);
-        log.info("Exit from service method createCourse");
-        return mapToResponseDto(savedCourse);
-    }
+	@Override
+	@Transactional
+	public CourseResponseDto createCourse(CourseRequestDto courseRequestDto) throws Exception {
+		log.info("Entered into service method createCourse");
+		Course course = courseMapper.toCourseEntity(courseRequestDto);
+		for (Component component : course.getComponents()) {
+			component.setCourse(course);
+			for (Chapter chapter : component.getChapters()) {
+				chapter.setComponent(component);
+			}
+		}
+		Course savedCourse = courseRepository.save(course);
+		log.info("Exit from service method createCourse");
+		return mapToResponseDto(savedCourse);
+	}
 
-    @Override
-    public List<CourseResponseDto> getAllCourses() throws Exception{
-    	log.info("Entered into service method getAllCourses");
-        return courseRepository.findAll().stream()
-                .map(this::mapToResponseDto)
-                .collect(Collectors.toList());
-    }
+	@Override
+	public List<CourseResponseDto> getAllCourses() throws Exception {
+		log.info("Entered into service method getAllCourses");
+		return courseRepository.findAll().stream().map(this::mapToResponseDto).collect(Collectors.toList());
+	}
 
-    @Override
-    public Optional<CourseResponseDto> getCourseById(Integer id) throws Exception{
-    	log.info("Entered into service method getCourseById");
-        return courseRepository.findById(id)
-                .map(this::mapToResponseDto);
-    }
+	@Override
+	public Optional<CourseResponseDto> getCourseById(Integer id) throws Exception {
+		log.info("Entered into service method getCourseById");
+		return courseRepository.findById(id).map(this::mapToResponseDto);
+	}
 
-    @Override
-    @Transactional
-    public CourseResponseDto updateCourse(Integer id, CourseRequestDto courseRequestDto) throws Exception{
-    	log.info("Entered into service method updateCourse");
-        Optional<Course> courseOptional = courseRepository.findById(id);
-        if (courseOptional.isPresent()) {
-            Course course = courseOptional.get();
-            courseMapper.updateCourseFromDto(courseRequestDto, course);
-            Course updatedCourse = courseRepository.save(course);
-            log.info("Exit from service method updateCourse with response ,"+ updatedCourse);
-            return  courseMapper.toCourseResponseDto(updatedCourse);
-        } else {
-        	log.info("No Course data found for given id,"+id);
-        	throw new ResourceNotFoundException("No data found");
-        }
-    }
+	@Override
+	@Transactional
+	public CourseResponseDto updateCourse(Integer id, CourseRequestDto courseRequestDto) throws Exception {
+		log.info("Entered into service method updateCourse");
+		Optional<Course> courseOptional = courseRepository.findById(id);
+		if (courseOptional.isPresent()) {
+			Course course = courseOptional.get();
+			courseMapper.updateCourseFromDto(courseRequestDto, course);
+			Course updatedCourse = courseRepository.save(course);
+			log.info("Exit from service method updateCourse with response ," + updatedCourse);
+			return courseMapper.toCourseResponseDto(updatedCourse);
+		} else {
+			log.info("No Course data found for given id," + id);
+			throw new ResourceNotFoundException("No data found");
+		}
+	}
 
-    @Override
-    public boolean deleteCourse(Integer id) throws Exception{
-    	log.info("Entered into service method deleteCourse");
-        if (courseRepository.existsById(id)) {
-            courseRepository.deleteById(id);
-            log.info("Entered into service method deleteCourse");
-            return true;
-        } else {
-        	log.info("No Course data found for given id,"+id);
-        	throw new ResourceNotFoundException("No data found");
-        }
-    }
+	@Override
+	public boolean deleteCourse(Integer id) throws Exception {
+		log.info("Entered into service method deleteCourse");
+		if (courseRepository.existsById(id)) {
+			courseRepository.deleteById(id);
+			log.info("Entered into service method deleteCourse");
+			return true;
+		} else {
+			log.info("No Course data found for given id," + id);
+			throw new ResourceNotFoundException("No data found");
+		}
+	}
 
-    private CourseResponseDto mapToResponseDto(Course course) {
-    	log.info("Entered into service method mapToResponseDto");
-    	return courseMapper.toCourseResponseDto(course);
-    }
+	private CourseResponseDto mapToResponseDto(Course course) {
+		log.info("Entered into service method mapToResponseDto");
+		return courseMapper.toCourseResponseDto(course);
+	}
 
 	@Override
 	public List<CourseResponseDto> getAllCoursesBySearch(SearchCriteria searchCriteria) {
 		log.info("Entered into service method getAllCoursesBySearch");
 		List<UserCourseMapping> userCourseMapping = userCourseMappingService.searchUserMapping(searchCriteria);
-		if(!userCourseMapping.isEmpty()) {
-			return courseRepository.findByCourseUserId(Integer.valueOf(searchCriteria.getSearchObject().getInputValue())).stream()
-	                .map(this::mapToResponseDto).toList();
+		if (!userCourseMapping.isEmpty()) {
+			return courseRepository
+					.findByCourseIdList(
+							userCourseMapping.stream().map(UserCourseMapping::getUserCourseMappingCourseId).toList())
+					.stream().map(this::mapToResponseDto).toList();
 		}
 		return null;
 	}
-    
-    
+
 }
